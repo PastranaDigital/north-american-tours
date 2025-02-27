@@ -1,4 +1,4 @@
-# North American Tours
+# North American Tours & API
 
 A website with custom API built using Node.js, Express &amp; MongoDB
 
