@@ -1,14 +1,22 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 //? SCHEMA Setup
 const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      //? built in validation ("required" in the schema)
       required: [true, 'A tour must have a name'], //? optional error message
       unique: true,
       trim: true,
+      maxLength: [
+        40,
+        'A tour name must have no more or equal than 40 characters',
+      ],
+      minLength: [10, 'A tour name must have more or equal than 10 characters'],
+      //   validate: [validator.isAlpha, 'A tour name must only have characters'], // this will fail if spaces are present
     },
     slug: String,
     duration: {
@@ -22,10 +30,17 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
+      //? limit the input options
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty must be: easy, medium or difficult',
+      },
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      max: [5, 'Rating must be below or equal to 5'],
+      max: [1, 'Rating must be above or equal to 1'],
     },
     ratingsQuantity: {
       type: Number,
@@ -36,7 +51,17 @@ const tourSchema = new mongoose.Schema(
       required: true,
       default: 499,
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      //? custom validation - False triggers a validation error
+      validate: {
+        message: 'Discount price ({VALUE}) should be less than the price.',
+        validator: function (value) {
+          // this will not work on the update because we are using the "this" keyword
+          return value < this.price;
+        },
+      },
+    },
     summary: {
       type: String,
       trim: true, // remove all white space at beginning and end,
@@ -57,6 +82,10 @@ const tourSchema = new mongoose.Schema(
       select: false, //? this will exclude this from ever showing outside of the DB
     },
     startDates: [Date], //ex:  ["2021-03-21", "2024-05-11, 11:50"] //? MongoDB will try to parse these into dates and will throw an error if it fails
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   // options object
   {
@@ -81,6 +110,29 @@ tourSchema.pre('save', function (next) {
 //   console.log(document);
 //   next();
 // });
+
+//? QUERY MIDDLEWARE: ex: to isolate a specific property
+//? this intersects before the query is executed
+//? this - points to the query object
+tourSchema.pre(/^find/, function (next) {
+  // tourSchema.pre('find', function (next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  //? we now have access to the docs returned
+  console.log(docs);
+  next();
+});
+
+//? AGGREGATION MIDDLEWARE; let's us keep specific property out of the aggregation in the stats
+//? this - points to the current aggregation object
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline()); // this is the pipeline we created
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema); //? Captial name since it is Model and like a Class, should be easily identified
 
