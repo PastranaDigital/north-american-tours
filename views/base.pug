@@ -1,0 +1,30 @@
+doctype html
+html
+	head
+		meta(charset='UTF-8')
+		meta(name='viewport' content='width=device-width, initial-scale=1.0')
+		link(rel='stylesheet' href='/css/style.css')
+		link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
+		link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+		title NA Tours | #{title}
+
+	body
+		// HEADER
+		//- parent page is including the children (-header) page
+		include _header
+
+		// CONTENT
+		block content 	
+			h1 place holder heading
+		//- main.main
+		//- 	h1= tour 
+		//- 	.card-container 
+		//- 		.card 	
+		//- 			.card__header 
+		//- 				.card__picture
+		//- 					.card__picture-overlay 
+		//- 						img(src="img/tour-1-cover.jpg" alt="Tour 1" class="card__picture-img")
+		//- 				h3.heading-tertirary= tour
+		//- 			.card__details
+		// FOOTER
+		include _footer
