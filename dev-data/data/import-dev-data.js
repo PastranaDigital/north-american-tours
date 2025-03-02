@@ -21,7 +21,7 @@ mongoose
   })
   .then((connection) => {
     // console.log(connection.connections);
-    console.log('DB Connection Established');
+    // console.log('DB Connection Established');
   });
 
 //? READ JSON FILE
@@ -31,7 +31,7 @@ const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 const importData = async () => {
   try {
     await Tour.create(tours);
-    console.log('Data successfully loaded');
+    // console.log('Data successfully loaded');
   } catch (error) {
     console.log(error);
   }
@@ -42,7 +42,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
-    console.log('All data deleted');
+    // console.log('All data deleted');
   } catch (error) {
     console.log(error);
   }
@@ -57,4 +57,4 @@ if (process.argv[2] === '--import') {
   console.log('Could not understand 3rd argument');
 }
 
-console.log(process.argv);
+// console.log(process.argv);

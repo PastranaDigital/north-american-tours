@@ -7,6 +7,7 @@ const userRouter = require('./routes/userRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const pug = require('pug');
 const { title } = require('process');
+const compression = require('compression');
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 //? our middleware that we will use to interpret the requests
-console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
+// console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); //? logging middleware only in dev
 }
@@ -27,7 +28,7 @@ app.use(express.json());
 
 //? Middleware that applies to all routes below it
 app.use((request, response, next) => {
-  console.log('in the middleware');
+  //   console.log('in the middleware');
   next(); //? is needed for the program to flow
 });
 app.use((request, response, next) => {
@@ -35,6 +36,9 @@ app.use((request, response, next) => {
   request.requestTime = new Date().toISOString();
   next();
 });
+
+//? Middleware for compression of text
+app.use(compression());
 
 //? Middleware for specified contexts
 //? Mounting routers

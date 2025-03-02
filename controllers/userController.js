@@ -6,7 +6,7 @@ const users = JSON.parse(
 
 //? handles validation for us and is called by the Middleware in the Routes file
 exports.checkID = (request, response, next, value) => {
-  console.log(`Checking id: ${value}`);
+  //   console.log(`Checking id: ${value}`);
   const selectedUser = users.find((element) => element._id === value);
 
   //! handle error where Id is outside of list
