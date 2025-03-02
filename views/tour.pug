@@ -2,6 +2,10 @@
 //- here a child page is asking to be included in the parent page
 extends base
 
+//- will will be inserted into the head of the base.pug file & not overwrite it
+block append head
+	//- script(src='/js/map.js')
+
 mixin reviewCard(review)
 	.reviews__card
 		.reviews__avatar
