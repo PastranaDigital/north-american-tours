@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+// const User = require('./userModel');
+// const validator = require('validator');
 
 //? SCHEMA Setup
 const tourSchema = new mongoose.Schema(
@@ -33,14 +34,15 @@ const tourSchema = new mongoose.Schema(
       //? limit the input options
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'Difficulty must be: easy, medium or difficult',
+        message: 'Difficulty is either: easy, medium, difficult',
       },
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
-      max: [5, 'Rating must be below or equal to 5'],
-      max: [1, 'Rating must be above or equal to 1'],
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
+      set: (val) => Math.round(val * 10) / 10, // 4.666666, 46.6666, 47, 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -48,8 +50,7 @@ const tourSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: true,
-      default: 499,
+      required: [true, 'A tour must have a price'],
     },
     priceDiscount: {
       type: Number,
@@ -86,8 +87,37 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
-  // options object
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -122,7 +152,7 @@ tourSchema.pre(/^find/, function (next) {
 
 tourSchema.post(/^find/, function (docs, next) {
   //? we now have access to the docs returned
-  console.log(docs);
+  //   console.log(docs);
   next();
 });
 

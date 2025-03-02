@@ -21,7 +21,7 @@ exports.aliasTopTours = (request, response, next) => {
 };
 
 exports.getAllTours = async (request, response) => {
-  console.log('request.query: ', request.query); //? pulls in if the route contains any query key value pairs
+  //   console.log('request.query: ', request.query); //? pulls in if the route contains any query key value pairs
   try {
     //? Build the query
     //! this API would need clear documentation for the users to understand what and how they can filter by
